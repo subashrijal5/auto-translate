@@ -40,4 +40,4 @@ jobs:
       - name: Install modules
         run: npm install
       - name: Run tests
-        run: npm run your-test-command
+        run: npm run test
