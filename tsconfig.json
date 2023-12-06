@@ -12,6 +12,7 @@
       "allowImportingTsExtensions": false,
       "resolveJsonModule": true,
       "isolatedModules": true,
+      "declaration": true,
 
       /* Linting */
       "strict": true,
@@ -23,3 +24,16 @@
   "exclude": ["**/*.spec.ts"],
   "noEmit": false
 }
+
+// {
+//   "compilerOptions": {
+//     "target": "es5",
+//     "module": "commonjs",
+//     "declaration": true,
+//     "outDir": "./lib",
+//     "rootDir": "./src",
+//     "strict": true
+//   },
+//   "include": ["src/**/*.ts"],
+//   "exclude": ["node_modules", "lib"]
+// }
