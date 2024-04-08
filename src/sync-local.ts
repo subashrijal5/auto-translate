@@ -1,4 +1,4 @@
-// src/sync-local.ts
+#!/usr/bin/env node
 import { syncLocale } from "./commands/main";
 
 syncLocale();

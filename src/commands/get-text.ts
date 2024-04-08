@@ -1,3 +1,4 @@
+import { BilingualError } from "../errors/BilingualError";
 import { ConfigType } from "../types/config";
 import { ApiClient } from "../utils/api";
 import { FileHandler } from "../utils/file-handler";
@@ -9,8 +10,8 @@ export class GetTexts {
 	constructor(protected config: ConfigType) {
 		this.validateKeys(config);
 		this.apiClient = new ApiClient(
-      config.LOCALIZE_API_KEY!,
-      config.LOCALIZE_API_URL!,
+      config.BILINGUAL_API_KEY!,
+      config.BILINGUAL_API_URL!,
 		);
 		this.fileHandler = new FileHandler(config.LOCALE_BASE_PATH!);
 	}
@@ -22,11 +23,11 @@ export class GetTexts {
    */
 	private validateKeys(config: ConfigType) {
 		const requiredProperties: (keyof ConfigType)[] = [
-			"LOCALIZE_API_KEY",
+			"BILINGUAL_API_KEY",
 			"LOCALE_BASE_PATH",
-			"LOCALIZE_API_URL",
+			"BILINGUAL_API_URL",
 			"GROUPED",
-			"LOCALIZE_DEFAULT_FILE_NAME",
+			"BILINGUAL_DEFAULT_FILE_NAME",
 		];
 
 		for (const property of requiredProperties) {
@@ -39,7 +40,6 @@ export class GetTexts {
 	public async initiate() {
 		try {
 			const languages = await this.apiClient.getProjectLanguages();
-			console.log("languages", languages);
 
 			languages.map(async (language) => {
 				const strings = await this.apiClient.getLanguageStrings(
@@ -49,6 +49,10 @@ export class GetTexts {
 				this.fileHandler.writeFile(language.short_code, strings);
 			});
 		} catch (error) {
+			if(error instanceof BilingualError){
+				console.error(error.message, error.toJSON());
+				return;
+			}
 			console.error("error", error, this.fileHandler);
 		}
 	}

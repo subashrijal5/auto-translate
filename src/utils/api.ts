@@ -1,4 +1,5 @@
 import { config } from "../config/config";
+import { BilingualError } from "../errors/BilingualError";
 import {
 	LanguageType,
 	SingleStringGroup,
@@ -52,6 +53,11 @@ export class ApiClient {
 				Accept: "application/json",
 			},
 		});
+		if (!response.ok) {
+			throw new BilingualError(response.status, "Error retrieving project languages", {
+				response: await response.json(),
+			});
+		}
 		return response.json();
 	}
 
