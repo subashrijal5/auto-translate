@@ -3,7 +3,7 @@ import * as fs from "fs";
 import * as pathModule from "path";
 
 import { SingleStringGroup, SingleStringType } from "../types/get-text";
-import { config } from "../config/config";
+import { config, getLocaleCodeMapFromServer } from "../config/config";
 
 /**
  * Handles file operations such as creating directories and writing files.
@@ -62,20 +62,21 @@ export class FileHandler {
 		language: string,
 		data: SingleStringGroup | SingleStringType[],
 	) {
+		const localeLanguage = getLocaleCodeMapFromServer(language);
 		if (config.GROUPED === "true") {
 			const groupedData = data as SingleStringGroup;
 			Object.keys(groupedData).map((page: keyof typeof groupedData) => {
-				this.createDirectoryIfNotExists(`${this.basePath}/${language}`);
+				this.createDirectoryIfNotExists(`${this.basePath}/${localeLanguage}`);
 				fs.writeFileSync(
-					`${this.basePath}/${language}/${page}.json`,
+					`${this.basePath}/${localeLanguage}/${page}.json`,
 					this.getWritableJson(groupedData[page]),
 				);
 			});
 		} else {
 			const stringData = data as SingleStringType[];
-			this.createDirectoryIfNotExists(`${this.basePath}/${language}`);
+			this.createDirectoryIfNotExists(`${this.basePath}/${localeLanguage}`);
 			fs.writeFileSync(
-				`${this.basePath}/${language}/${config.LOCALIZE_DEFAULT_FILE_NAME}.json`,
+				`${this.basePath}/${localeLanguage}/${config.BILINGUAL_DEFAULT_FILE_NAME}.json`,
 				this.getWritableJson(stringData),
 			);
 		}
@@ -84,8 +85,22 @@ export class FileHandler {
 	private getWritableJson(strings: SingleStringType[]) {
 		const writeData: Record<string, string> = {};
 		strings.map((string) => {
-			writeData[string.key] = string.value;
+			const keyParts = string.key.split(".");
+			this.getNestedJson(keyParts,string.value, writeData);
 		});
 		return JSON.stringify(writeData, null, 4);
+	}
+
+	private getNestedJson(keys: string[], value: string, returnData: Record<string,  string> = {}): Record<string, object | string> {
+		if(keys.length > 1) {
+			const key = keys.shift();
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			returnData[key] = this.getNestedJson(keys, value, returnData[key] ??{});
+			return returnData;
+		}
+		
+		returnData[keys[0]] = value;
+		return returnData;
 	}
 }
