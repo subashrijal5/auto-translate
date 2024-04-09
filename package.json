@@ -1,10 +1,11 @@
 {
-    "name": "ts-translate",
+    "name": "bilingual-translate",
     "private": false,
-    "version": "0.0.3",
+    "version": "0.0.0",
     "type": "commonjs",
     "types": "build/types/config.d.ts",
     "main": "build/get-translated.js",
+    "homepage": "https://bilingual.vuvusha.com",
     "bin": {
         "get-translated": "build/get-translated.js",
         "push-locales": "build/push-locales.js"
