@@ -2,6 +2,8 @@ import { config } from "../config/config";
 import { BilingualError } from "../errors/BilingualError";
 import {
 	LanguageType,
+	ProjectType,
+	ResponseType,
 	SingleStringGroup,
 	SingleStringType,
 } from "../types/get-text";
@@ -16,22 +18,28 @@ export class ApiClient {
 	}
 
 	/**
-   * Validates the project by making a GET request to the project URL with the provided API key.
+   * get the project by making a GET request to the project URL with the provided API key.
    *
    * @throws {Error} If an error occurs during the request or if the API key is invalid.
    */
-	public async validateProject() {
-		try {
-			const projectUrl = new URL(this.baseUrl + "/api/projects");
-			await fetch(projectUrl, {
-				method: "GET",
-				headers: {
-					"X-PROJECT-KEY": this.token,
-				},
+	public async getProject(): Promise<ResponseType<ProjectType>> {
+
+		const projectUrl = new URL(this.baseUrl + "/api/projects");
+		const response = await fetch(projectUrl, {
+			method: "GET",
+			headers: {
+				"X-PROJECT-KEY": this.token,
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		});
+		if (!response.ok) {
+			throw new BilingualError(response.status, "Invalid api key", {
+				response: await response.json(),
 			});
-		} catch (e) {
-			throw Error("Invalid api key");
 		}
+		return response.json();
+		
 	}
 
 	/**
@@ -51,6 +59,7 @@ export class ApiClient {
 			headers: {
 				"X-PROJECT-KEY": this.token,
 				Accept: "application/json",
+				"Content-Type": "application/json",
 			},
 		});
 		if (!response.ok) {
@@ -86,8 +95,36 @@ export class ApiClient {
 			headers: {
 				"X-PROJECT-KEY": this.token,
 				Accept: "application/json",
+				"Content-Type": "application/json",
 			},
 		});
+		return response.json();
+	}
+
+	/**
+	 * Push the language strings to the server.	
+	 * @param langCode The language code of the language to push the strings to.
+	 * @returns A Promise that resolves to the response from the server.
+	 * 
+	 **/
+	public async pushLanguageString(langCode:string, strings: Array<Record<string, string>>) {
+		const pushUrl = new URL(`${this.baseUrl}/api/projects/languages/${langCode}/sync-strings`);
+		const response = await fetch(pushUrl, {
+			method: "POST",
+			headers: {
+				"X-PROJECT-KEY": this.token,
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({
+				strings: strings,
+			})
+		});
+		if (!response.ok) {
+			throw new BilingualError(response.status, "Error pushing language strings", {
+				response: await response.json(),
+			});
+		}
 		return response.json();
 	}
 }

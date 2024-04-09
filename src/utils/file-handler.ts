@@ -103,4 +103,46 @@ export class FileHandler {
 		returnData[keys[0]] = value;
 		return returnData;
 	}
+	
+
+	public getCurrentLanguageCodes(){
+		const languageCodes = fs.readdirSync(this.basePath);
+		return languageCodes;
+	}
+	
+	public getStringsFromLocales(language: string): Array<Record<string, string>>{
+		const localeLanguage = getLocaleCodeMapFromServer(language);
+		const files = fs.readdirSync(`${this.basePath}/${localeLanguage}`);
+		if(files.length === 0){
+			return [];
+		}
+		
+		let strings: Array<Record<string, string>> = [];
+		files.map((file) => {
+			const string = fs.readFileSync(`${this.basePath}/${localeLanguage}/${file}`, "utf8");
+			strings =	this.convertToPushBodyFromJson(JSON.parse(string), file.replace(".json", ""), strings);
+		});
+
+		return strings;
+	}
+
+	private convertToPushBodyFromJson(jsonData: Record<string,string|object>, group: string, returnData: Array<Record<string, string>>  = [], parentKey = "") {
+		// iterate over the object
+		for (const [key, value] of Object.entries(jsonData)) {
+			// recursively call the function with the nested object
+			if (typeof value === "object") {
+				const newParentKey = parentKey ? `${parentKey}.${key}` : key;
+				this.convertToPushBodyFromJson(value as Record<string,string|object>, `${group}.${key}`, returnData, newParentKey);
+				continue;
+			}
+			returnData.push({
+				key: parentKey ? `${parentKey}.${key}` : key,
+				value: value,
+				group: group
+			});
+			
+		}
+		return returnData;
+
+	}
 }
