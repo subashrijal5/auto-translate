@@ -1,12 +1,14 @@
 {
-    "name": "ts-translate",
+    "name": "bilingual-translate",
     "private": false,
-    "version": "0.0.2",
+    "version": "0.0.0",
     "type": "commonjs",
     "types": "build/types/config.d.ts",
-    "main": "build/sync-local.js",
+    "main": "build/get-translated.js",
+    "homepage": "https://bilingual.vuvusha.com",
     "bin": {
-        "sync-locale": "build/sync-local.js"
+        "get-translated": "build/get-translated.js",
+        "push-locales": "build/push-locales.js"
     },
     "author": {
         "name": "Subash Rijal",
@@ -15,11 +17,12 @@
     },
     "scripts": {
         "build": "tsc",
-        "sync-locale": "node build/sync-local.js",
+        "get-translated": "node build/get-translated.js",
+        "push-locales": "node build/push-locales",
         "test": "jest",
         "prepare": "husky install",
-        "lint": "eslint \"*/**/*.{ts,js,json}\"",
-        "lint:fix": "eslint \"*/**/*.{ts,js,json}\" --fix",
+        "lint": "eslint \"*/**/*.{ts,js}\"",
+        "lint:fix": "eslint \"*/**/*.{ts,js}\" --fix",
         "copy-typescript-definitions": "copyfiles -u 1 \"src/**/*.d.ts\" build",
         "prepublishOnly": " npm run lint && npm run test && npm run build"
     },

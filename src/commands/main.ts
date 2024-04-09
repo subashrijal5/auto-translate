@@ -4,9 +4,15 @@ envConfig();
 
 import { GetTexts } from "./get-text";
 import { config } from "../config/config";
+import { PushTexts } from "./push-text";
 
-const client = new GetTexts(config);
+const getText = new GetTexts(config);
+const pushText = new PushTexts(config);
 
 export const syncLocale = async () => {
-	await client.initiate().catch((e) => console.log(e));
+	await getText.execute().catch((e) => console.error(e));
+};
+
+export const pushLocales = async () => {
+	await pushText.execute().catch((e) => console.error(e));
 };

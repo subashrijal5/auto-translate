@@ -21,3 +21,16 @@ export type SingleStringType = {
 };
 
 export type SingleStringGroup = Record<string, SingleStringType[]>;
+
+
+export type ProjectType = {
+  id: number;
+  name: string;
+  base_language: string;
+  slug: string;
+}
+
+export type ResponseType<T> = {
+  data: T;
+  message: string;
+}

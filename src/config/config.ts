@@ -18,7 +18,7 @@ export function getLocaleCodeMapFromServer(langCode: string){
 
 export const config: ConfigType = {
 	BILINGUAL_API_KEY: process.env.BILINGUAL_API_KEY,
-	LOCALE_BASE_PATH: process.env.LOCALE_BASE_PATH ?? "/locales",
+	LOCALE_BASE_PATH: process.env.LOCALE_BASE_PATH ?? "locales",
 	BILINGUAL_API_URL:
     process.env.BILINGUAL_API_URL ?? "https://bilingualapp.vuvusha.com",
 	GROUPED: process.env.GROUPED
